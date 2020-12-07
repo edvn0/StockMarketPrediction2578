@@ -1,3 +1,6 @@
+import numpy as np
+from src.data_prediction import tf_model
+from src.normalization import NormalizationMethod
 from src.data_input import CSVReader, CSVFile
 from src.data_analysis import DataAnalysis
 from src.time_series import TimeSeries
@@ -7,7 +10,8 @@ if __name__ == "__main__":
         [CSVFile('src/resources/time_series_test.csv', delimiter=',', header=True, to_numeric=True)])
     files = ds.read_csv()
     ts_file = files[0]
-    ts = TimeSeries(ts_file, 5, 3)
+    ts = TimeSeries(ts_file, 5, 3, NormalizationMethod.min_max)
     created = ts.generate()
 
-    print(created)
+    model = tf_model(input_dims=(8,), output_dims=3)
+    model.fit(created.data, created.labels, epochs=10, verbose=2)

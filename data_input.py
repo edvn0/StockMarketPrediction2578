@@ -1,6 +1,12 @@
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Tuple
 import numpy as np
-import json
+from enum import Enum
+
+
+class Normalization(Enum):
+    min_max = 0
+    z_norm = 1
+    pass
 
 
 class DataEntry(object):
@@ -26,7 +32,7 @@ class DataEntry(object):
         return len(self.data)
 
     def __repr__(self) -> str:
-        return ", ".join([str(self.data), str(self.label), str(self.row_index)])
+        return ", ".join([f'Data: {self.data}', f'Label: {self.label}'])
 
 
 class DataSet(object):
@@ -49,30 +55,38 @@ class DataSet(object):
         mean_data = self.data.mean(axis=0)
         var_data = self.data.var(axis=0)
         std_data = self.data.std(axis=0)
+        max_data = self.data.max(axis=0)
+        min_data = self.data.min(axis=0)
 
         mean_label = self.labels.mean(axis=0)
         var_label = self.labels.var(axis=0)
         std_label = self.labels.std(axis=0)
+        max_label = self.label.max(axis=0)
+        min_label = self.label.min(axis=0)
 
         return {
             'data':
             {
                 'mean': mean_data,
                 'var': var_data,
-                'std': std_data
+                'std': std_data,
+                'max': max_data,
+                'min': min_data
             },
             'label':
             {
                 'mean': mean_label,
                 'var': var_label,
-                'std': std_label
+                'std': std_label,
+                'max': max_label,
+                'min': min_label
             }
         }
 
     def __len__(self):
         return len(self.ds)
 
-    def get(self, index: int):
+    def __getitem__(self, index: int):
         return self.ds[index]
 
     def get_range(self, start: int, end: int):
@@ -80,6 +94,9 @@ class DataSet(object):
 
     def sample(self, size: int):
         return np.random.choice(self.ds, size, replace=True)
+
+    def __repr__(self) -> str:
+        return str(self.ds)
 
 
 class CSVFile(object):

@@ -1,3 +1,4 @@
+import numpy as np
 from data_input import CSVFile, CSVReader, DataSet
 
 
@@ -12,29 +13,35 @@ class DataAnalysis(object):
 
         descriptives = self.ds.descriptives()
 
-        intervals_for_features = []
+        intervals = []
 
-        for i, desc in enumerate(descriptives):
-            data = desc.get('data')
-            mean = data.get('mean')
-            sd = data.get('std')
+        for sub in descriptives:
+            dataset_metrics = descriptives.get(sub).values()
+            values = np.array([x for x in dataset_metrics])
 
-            intervals = [(-sd*n + mean, sd*n + mean) for n in sigma]
+            mean = values[0]
+            var = values[1]
+            sd = values[2]
 
-            intervals_for_features.append(
-                {
-                    'feature_index': i,
-                    'intervals': intervals
-                }
-            )
+            hi = [mean + sd * n for n in range(sigma)]
+            lo = [mean - sd * n for n in range(sigma)]
+
+            interval = [(lo[i], hi[i]) for i in range(len(dataset_metrics))]
+
+            print("hi", hi)
+            print("lo", lo)
+
+            intervals.append(interval)
+        return intervals
 
 
 if __name__ == "__main__":
     reader = CSVReader(
-        [CSVFile(fn='iris.csv', delimiter=',', header=True, to_numeric=True, one_hot_classes=3), CSVFile(fn='linnerud_exercise.csv', delimiter=' ', header=True, to_numeric=True)])
+        [CSVFile(fn='iris.csv', delimiter=',', header=True, to_numeric=True)])
     hey = reader.read_csv()
     for csv in hey:
         print(csv.descriptives())
         print(csv.size())
 
     analysis = DataAnalysis(hey[0])
+    print(analysis.std_intervals(sigma=3))

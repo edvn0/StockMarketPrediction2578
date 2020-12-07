@@ -1,12 +1,5 @@
 from typing import Dict, List, Tuple
 import numpy as np
-from enum import Enum
-
-
-class Normalization(Enum):
-    min_max = 0
-    z_norm = 1
-    pass
 
 
 class DataEntry(object):

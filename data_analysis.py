@@ -1,5 +1,6 @@
+from typing import List
 import numpy as np
-from data_input import CSVFile, CSVReader, DataSet
+from data_input import DataSet
 
 
 class DataAnalysis(object):
@@ -8,6 +9,17 @@ class DataAnalysis(object):
         self.ds = ds
 
     def std_intervals(self, sigma: int):
+        """Generates intervals of sigma significance around the mean for all features of this class
+
+        Args:
+            sigma (int): how many standard deviations do we accept
+
+        Raises:
+            ValueError: if sigma is < 1.
+
+        Returns:
+            List[Tuple[float, float]]: List of (mean - sd*k, mean + sd*k) for k = sigma.
+        """
         if not 1 <= sigma:
             raise ValueError('Sigma is >= 1.')
 
@@ -20,7 +32,6 @@ class DataAnalysis(object):
             values = np.array([x for x in dataset_metrics])
 
             mean = values[0]
-            var = values[1]
             sd = values[2]
 
             hi = [mean + sd * n for n in range(sigma)]
@@ -28,20 +39,5 @@ class DataAnalysis(object):
 
             interval = [(lo[i], hi[i]) for i in range(len(dataset_metrics))]
 
-            print("hi", hi)
-            print("lo", lo)
-
             intervals.append(interval)
         return intervals
-
-
-if __name__ == "__main__":
-    reader = CSVReader(
-        [CSVFile(fn='iris.csv', delimiter=',', header=True, to_numeric=True)])
-    hey = reader.read_csv()
-    for csv in hey:
-        print(csv.descriptives())
-        print(csv.size())
-
-    analysis = DataAnalysis(hey[0])
-    print(analysis.std_intervals(sigma=3))

@@ -9,4 +9,5 @@ if __name__ == "__main__":
     ts_file = files[0]
     ts = TimeSeries(ts_file, 5, 3)
     created = ts.generate()
+
     print(created)

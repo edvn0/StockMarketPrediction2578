@@ -1,6 +1,6 @@
 from typing import List
 import numpy as np
-from data_input import CSVFile, CSVReader, DataEntry, DataSet
+from src.data_input import CSVFile, CSVReader, DataEntry, DataSet
 import math
 
 

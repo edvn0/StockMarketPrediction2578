@@ -54,8 +54,8 @@ class DataSet(object):
         mean_label = self.labels.mean(axis=0)
         var_label = self.labels.var(axis=0)
         std_label = self.labels.std(axis=0)
-        max_label = self.label.max(axis=0)
-        min_label = self.label.min(axis=0)
+        max_label = self.labels.max(axis=0)
+        min_label = self.labels.min(axis=0)
 
         return {
             'data':

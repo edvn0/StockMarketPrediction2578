@@ -91,6 +91,9 @@ class DataSet(object):
     def __repr__(self) -> str:
         return str(self.ds)
 
+    def split_data(self):
+        return self.data, self.labels
+
 
 class CSVFile(object):
     def __init__(self, fn: str, delimiter: str, header: bool, to_numeric: bool, one_hot_classes: int = 0) -> None:
@@ -122,6 +125,8 @@ class CSVReader(object):
 
                 for i, row in enumerate(reader):
                     row_size = len(row)
+                    if len(row) == 0:
+                        continue
                     # reasonable assumption for classification
                     data = row[:row_size-1]
                     # might be onehot, you have to solve this yourself.

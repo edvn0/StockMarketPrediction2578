@@ -5,24 +5,23 @@ from src.data_input import DataEntry, DataSet
 
 
 class TimeSeries(object):
-    def __init__(self, ds: DataSet,  window_size: int, label_size: int, normalization_method: NormalizationMethod, repeat: int) -> None:
+    def __init__(self, ds: DataSet,  window_size: int, label_size: int, normalization_method: NormalizationMethod) -> None:
         super().__init__()
         self.window_size = window_size
         self.label_size = label_size
         self.total_size = self.window_size + self.label_size
         self.ds = ds
-        self.repeat = repeat
 
         self.normalizer = Normalizer(self.ds, normalization_method)
         self.normed_data = self.normalizer.normalize()
 
         self.size = self.ds.size()[0]
 
-    def generate(self):
+    def generate(self, split=True):
         time_series: List[DataEntry] = []
         step = self.window_size
         k = 0
-        data = self.normed_data.reshape(-1, 1)
+        data = self.normed_data
         label = np.array(
             list(map(lambda x: x['label'], self.ds))).reshape(-1, 1)
         for i in range(0, self.size, step):
@@ -40,8 +39,6 @@ class TimeSeries(object):
             time_series = time_series[:-1]
 
         ds = DataSet(time_series)
-        X, Y = ds.split_data()
-        print(np.shape(X), np.shape(Y))
-        X = X.reshape(-1, self.window_size)
-        Y = Y.reshape(-1, self.label_size)
-        return X, Y
+        if split:
+            return ds.split_data()
+        return ds

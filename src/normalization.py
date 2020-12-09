@@ -31,7 +31,7 @@ class Normalizer(object):
             return self._mean_norm()
         elif self.method == NormalizationMethod.vector_norm:
             return self._vector_norm()
-        elif self.methoid == NormalizationMethod.none:
+        elif self.method == NormalizationMethod.none:
             return self.ds.data.copy()
         else:
             raise ValueError('Only (min_max, z_norm) are allowed.')

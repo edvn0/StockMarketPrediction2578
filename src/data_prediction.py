@@ -9,13 +9,13 @@ os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 def tf_model(input_dims, output_dims, mode: str) -> Sequential:
     model = K.Sequential([
         L.Input(shape=input_dims),
-        L.Dense(300, activation='relu'),
-        L.Dense(300, activation='relu'),
+        L.Dense(10, activation='relu'),
+        L.Dense(10, activation='relu'),
     ])
     if mode == 'regression':
         model.add(L.Dense(output_dims, activation='tanh'))
         model.compile(optimizer=K.optimizers.Adam(
-            learning_rate=0.00001), loss='mse', metrics=['accuracy', 'mae'])
+            learning_rate=0.001), loss='mse', metrics=['accuracy', 'mae'])
     elif mode == 'classification':
         model.add(L.Dense(output_dims, activation='softmax'))
         model.compile(optimizer=K.optimizers.Adam(

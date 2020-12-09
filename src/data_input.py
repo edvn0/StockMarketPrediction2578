@@ -1,5 +1,7 @@
 from typing import Dict, List, Tuple
 import numpy as np
+import os
+import csv as csv
 
 
 class DataEntry(object):
@@ -96,9 +98,11 @@ class DataSet(object):
 
 
 class CSVFile(object):
-    def __init__(self, fn: str, delimiter: str, header: bool, to_numeric: bool, one_hot_classes: int = 0) -> None:
+    def __init__(self, fn: str, delimiter: str, header: bool, to_numeric: bool, one_hot_classes: int = 0, prefix=None) -> None:
         super().__init__()
-        self.filename = fn
+        self.prefix = prefix
+        self.filename = fn if self.prefix is None else os.path.join(
+            self.prefix, fn)
         self.delimiter = delimiter
         self.header = header,
         self.to_numeric = to_numeric
@@ -107,16 +111,56 @@ class CSVFile(object):
 
 
 class CSVReader(object):
-    def __init__(self, filenames: List[CSVFile]) -> None:
+    def __init__(self, data_indices: List[int], label_index: int, filenames: List[CSVFile] = None, dir: str = None) -> None:
+        """Creates a CSV reader for Stock Market historic files.
+
+        Args:
+            header_indices (List[int]): which headers do you need to extract, by indicies, example:
+                    "Name", "Age", "Weight", "Height", "Gender", "date_created" -> [0,1,2,3,4] indicating you do not need date_created
+            filenames (List[CSVFile], optional): List of CSVFiles to analyse. Defaults to None.
+            dir (str, optional): Directory of csv files to gather. Defaults to None.
+
+        Raises:
+            ValueError: [description]
+            ValueError: [description]
+        """
         super().__init__()
-        self.files = filenames
+
+        self.data_indices = data_indices
+        self.label_index = label_index
+        self.from_dir = False
+        if dir is not None and filenames is not None:
+            raise ValueError(
+                'Choose either a directory, or create your own files in a list.')
+        elif dir is not None:
+            self.dir = dir
+            self.files = os.listdir(self.dir)
+            self.files = list(filter(lambda x: '.csv' in str(x), self.files))
+            print("In dir: ", self.files)
+            self.from_dir = True
+        elif filenames is not None:
+            self.files = filenames
+        else:
+            raise ValueError(
+                'Choose either a directory, or create your own files in a list.')
 
     def read_csv(self) -> List[DataSet]:
-        import csv as csv
+        if self.from_dir:
+            return self._read_from_dir()
+        else:
+            return self._read_from_csv_file()
 
-        files_to_csv: List[DataSet] = []
+    def _read_from_dir(self):
+        files = [CSVFile(fn, delimiter=',', header=True, to_numeric=True, prefix=self.dir)
+                 for fn in self.files]
+        return self._files_to_csv(files)
 
-        for f in self.files:
+    def _read_from_csv_file(self):
+        return self._files_to_csv(self.files)
+
+    def _files_to_csv(self, files: List[CSVFile]):
+        output_csv: List[CSVFile] = []
+        for f in files:
             with open(f.filename, mode='r') as csv_file:
                 reader = csv.reader(csv_file, delimiter=f.delimiter)
                 to_csv_file = []
@@ -125,12 +169,19 @@ class CSVReader(object):
 
                 for i, row in enumerate(reader):
                     row_size = len(row)
-                    if len(row) == 0:
+                    if row_size == 0:
                         continue
+
+                    if 'null' in row:
+                        continue
+
                     # reasonable assumption for classification
-                    data = row[:row_size-1]
+                    data = []
+                    for d in self.data_indices:
+                        data.append(row[d])
                     # might be onehot, you have to solve this yourself.
-                    label = row[row_size-1]
+
+                    label = row[self.label_index]
 
                     if f.to_numeric:  # force numeric if not already...
                         data = list(map(float, data))
@@ -145,6 +196,6 @@ class CSVReader(object):
                     entry = DataEntry(data, label, i)
                     to_csv_file.append(entry)
 
-                files_to_csv.append(DataSet(to_csv_file))
+                output_csv.append(DataSet(to_csv_file))
 
-        return files_to_csv
+        return output_csv

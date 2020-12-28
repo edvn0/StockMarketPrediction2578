@@ -1,7 +1,8 @@
-from typing import Dict, List, Tuple
-import numpy as np
-import os
 import csv as csv
+import os
+from typing import Dict, List, Tuple
+
+import numpy as np
 
 
 class DataEntry(object):
@@ -61,21 +62,21 @@ class DataSet(object):
 
         return {
             'data':
-            {
-                'mean': mean_data,
-                'var': var_data,
-                'std': std_data,
-                'max': max_data,
-                'min': min_data
-            },
+                {
+                    'mean': mean_data,
+                    'var': var_data,
+                    'std': std_data,
+                    'max': max_data,
+                    'min': min_data
+                },
             'label':
-            {
-                'mean': mean_label,
-                'var': var_label,
-                'std': std_label,
-                'max': max_label,
-                'min': min_label
-            }
+                {
+                    'mean': mean_label,
+                    'var': var_label,
+                    'std': std_label,
+                    'max': max_label,
+                    'min': min_label
+                }
         }
 
     def __len__(self):
@@ -98,7 +99,8 @@ class DataSet(object):
 
 
 class CSVFile(object):
-    def __init__(self, fn: str, delimiter: str, header: bool, to_numeric: bool, one_hot_classes: int = 0, prefix=None) -> None:
+    def __init__(self, fn: str, delimiter: str, header: bool, to_numeric: bool, one_hot_classes: int = 0,
+                 prefix=None) -> None:
         super().__init__()
         self.prefix = prefix
         self.filename = fn if self.prefix is None else os.path.join(
@@ -111,7 +113,8 @@ class CSVFile(object):
 
 
 class CSVReader(object):
-    def __init__(self, data_indices: List[int], label_index: int, filenames: List[CSVFile] = None, dir: str = None) -> None:
+    def __init__(self, data_indices: List[int], label_index: int, filenames: List[CSVFile] = None,
+                 dir: str = None) -> None:
         """Creates a CSV reader for Stock Market historic files.
 
         Args:
@@ -136,7 +139,6 @@ class CSVReader(object):
             self.dir = dir
             self.files = os.listdir(self.dir)
             self.files = list(filter(lambda x: '.csv' in str(x), self.files))
-            print("In dir: ", self.files)
             self.from_dir = True
         elif filenames is not None:
             self.files = filenames

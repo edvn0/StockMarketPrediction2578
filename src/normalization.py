@@ -17,10 +17,10 @@ class Normalizer(object):
         self.ds = ds
         self.method = method
         self.descriptives = self.ds.descriptives()
-        self.maxes = self.descriptives.get('data').get('max')
-        self.mines = self.descriptives.get('data').get('min')
-        self.means = self.descriptives.get('data').get('mean')
-        self.stds = self.descriptives.get('data').get('std')
+        self.maxes_data = self.descriptives.get('data').get('max')
+        self.mins_data = self.descriptives.get('data').get('min')
+        self.means_data = self.descriptives.get('data').get('mean')
+        self.stds_data = self.descriptives.get('data').get('std')
 
     def normalize(self):
         if self.method == NormalizationMethod.min_max:
@@ -38,19 +38,17 @@ class Normalizer(object):
 
     def _min_max(self):
         data = self.ds.data.copy()
-        data = (data - self.mines) / (self.maxes - self.mines)
+        data = (data - self.mins_data) / (self.maxes_data - self.mins_data)
         return data
 
     def _z_norm(self):
         data = self.ds.data.copy()
-        print(self.means)
-        print(self.stds)
-        data = (data - self.means) / (self.stds)
+        data = (data - self.means_data) / self.stds_data
         return data
 
     def _mean_norm(self):
         data = self.ds.data.copy()
-        data = (data - self.means) / (self.maxes - self.mines)
+        data = (data - self.means_data) / (self.maxes_data - self.mins_data)
         return data
 
     def _vector_norm(self):

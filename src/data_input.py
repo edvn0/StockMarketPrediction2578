@@ -5,9 +5,8 @@ from typing import Dict, List, Tuple
 import numpy as np
 
 
-class DataEntry(object):
-    def __init__(self, data, label, row_index) -> None:
-        super().__init__()
+class DataEntry():
+    def __init__(self, data, label, row_index):
         self.data = data
         self.label = label
         self.row_index = row_index
@@ -31,9 +30,8 @@ class DataEntry(object):
         return ", ".join([f'Data: {self.data}', f'Label: {self.label}'])
 
 
-class DataSet(object):
+class DataSet():
     def __init__(self, data_list: List[DataEntry]) -> None:
-        super().__init__()
         self.ds = data_list
         self.data: np.ndarray = np.array(
             list(map(lambda x: x['data'], self.ds)))
@@ -112,7 +110,7 @@ class CSVFile(object):
         self.classes = one_hot_classes
 
 
-class CSVReader(object):
+class CSVReader():
     def __init__(self, data_indices: List[int], label_index: int, filenames: List[CSVFile] = None,
                  dir: str = None) -> None:
         """Creates a CSV reader for Stock Market historic files.
@@ -127,8 +125,6 @@ class CSVReader(object):
             ValueError: [description]
             ValueError: [description]
         """
-        super().__init__()
-
         self.data_indices = data_indices
         self.label_index = label_index
         self.from_dir = False

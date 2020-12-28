@@ -11,16 +11,21 @@ class NormalizationMethod(Enum):
     vector_norm = 4
 
 
-class Normalizer(object):
+class Normalizer():
     def __init__(self, ds: DataSet, method: str) -> None:
-        super().__init__()
-        self.ds = ds
+        self.ds: DataSet = ds
         self.method = method
         self.descriptives = self.ds.descriptives()
         self.maxes_data = self.descriptives.get('data').get('max')
         self.mins_data = self.descriptives.get('data').get('min')
         self.means_data = self.descriptives.get('data').get('mean')
         self.stds_data = self.descriptives.get('data').get('std')
+
+        if len(ds) < 2:
+            self.maxes_data = self.maxes_data.max()
+            self.mins_data = self.mins_data.min()
+            self.means_data = self.means_data.mean()
+            self.stds_data = self.stds_data.std()
 
     def normalize(self):
         if self.method == NormalizationMethod.min_max:
@@ -34,7 +39,8 @@ class Normalizer(object):
         elif self.method == NormalizationMethod.none:
             return self.ds.data.copy()
         else:
-            raise ValueError('Only (min_max, z_norm) are allowed.')
+            raise ValueError(
+                'Only (min_max, z_norm, mean_norm, vector_norm) are allowed.')
 
     def _min_max(self):
         data = self.ds.data.copy()

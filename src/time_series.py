@@ -28,7 +28,7 @@ class TimeSeries(object):
 
             window_data = data[i:i+self.window_size]
             window_label = label[i+self.window_size: i +
-                                 self.window_size+self.label_size]
+                                 self.total_size]
             k += 1
             entry = DataEntry(window_data, window_label,  k)
             time_series.append(entry)

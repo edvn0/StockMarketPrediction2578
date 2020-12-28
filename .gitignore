@@ -3,3 +3,7 @@ __pycache__/
 *.csv
 .idea
 .vscode
+src/resources/.Rproj.user
+src/resources/.RData
+src/resources/.Rhistory
+src/resources/Stocks.Rproj

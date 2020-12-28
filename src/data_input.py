@@ -1,15 +1,18 @@
 import csv as csv
+from numbers import Number
 import os
 from typing import Dict, List, Tuple
 
 import numpy as np
+from tensorflow.python.data.ops.dataset_ops import Dataset
 
 
 class DataEntry():
-    def __init__(self, data, label, row_index):
+    def __init__(self, data, label, row_index, meta=None):
         self.data = data
         self.label = label
         self.row_index = row_index
+        self.meta = meta
 
     def __getitem__(self, item):
         if item == 'data':
@@ -18,9 +21,11 @@ class DataEntry():
             return self.label
         elif item == 'index':
             return self.row_index
+        elif item == 'meta':
+            return self.meta
         else:
             raise ValueError(
-                'Only data, label and index are allowed as indices into this object.')
+                'Only data, label, index, and meta are allowed as indices into this object.')
 
     @property
     def feature_size(self):
@@ -31,16 +36,20 @@ class DataEntry():
 
 
 class DataSet():
-    def __init__(self, data_list: List[DataEntry]) -> None:
+    def __init__(self, data_list: List[DataEntry], identifier=None) -> None:
         self.ds = data_list
+        self.id = identifier
         self.data: np.ndarray = np.array(
-            list(map(lambda x: x['data'], self.ds)))
+            list(map(lambda x: x['data'], self.ds)), dtype=np.double)
         self.labels: np.ndarray = np.array(
-            list(map(lambda x: x['label'], self.ds)))
+            list(map(lambda x: x['label'], self.ds)), dtype=np.double)
         self.classes = np.shape(self.labels[0])
         self.indicies: np.ndarray = np.array(
-            list(map(lambda x: x['index'], self.ds))).reshape(-1, 1)
+            list(map(lambda x: x['index'], self.ds)), dtype=np.double).reshape(-1, 1)
         self.features = self.ds[0].feature_size
+
+    def identifier(self):
+        return self.id
 
     def size(self) -> Tuple:
         return (len(self), self.features, self.classes)
@@ -111,7 +120,7 @@ class CSVFile(object):
 
 
 class CSVReader():
-    def __init__(self, data_indices: List[int], label_index: int, filenames: List[CSVFile] = None,
+    def __init__(self, data_indices: List[int], label_index: int, info_indices: list, filenames: List[CSVFile] = None,
                  dir: str = None) -> None:
         """Creates a CSV reader for Stock Market historic files.
 
@@ -128,6 +137,7 @@ class CSVReader():
         self.data_indices = data_indices
         self.label_index = label_index
         self.from_dir = False
+        self.info_indices = info_indices
         if dir is not None and filenames is not None:
             raise ValueError(
                 'Choose either a directory, or create your own files in a list.')
@@ -157,7 +167,7 @@ class CSVReader():
         return self._files_to_csv(self.files)
 
     def _files_to_csv(self, files: List[CSVFile]):
-        output_csv: List[CSVFile] = []
+        output_csv: List[DataSet] = []
         for f in files:
             with open(f.filename, mode='r') as csv_file:
                 reader = csv.reader(csv_file, delimiter=f.delimiter)
@@ -181,6 +191,8 @@ class CSVReader():
 
                     label = row[self.label_index]
 
+                    info = [row[d] for d in self.info_indices]
+
                     if f.to_numeric:  # force numeric if not already...
                         data = list(map(float, data))
                         label = float(label)
@@ -191,9 +203,10 @@ class CSVReader():
                         one_hot[label_to_int] = 1
                         label = one_hot
 
-                    entry = DataEntry(data, label, i)
+                    entry = DataEntry(data, label, i, info)
                     to_csv_file.append(entry)
 
-                output_csv.append(DataSet(to_csv_file))
+                name = os.path.basename(csv_file.name)
+                output_csv.append(DataSet(to_csv_file, name))
 
         return output_csv

@@ -6,22 +6,25 @@ import os
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
 
-def tf_model(input_dims, output_dims, mode: str) -> Sequential:
+def tf_model(input_dims, output_dims) -> Sequential:
     model = K.Sequential([
         L.Input(shape=input_dims),
-        L.Dense(10, activation='relu'),
-        L.Dense(10, activation='relu'),
+        L.Conv1D(filters=60, kernel_size=5, strides=1,
+                 padding="causal", activation="relu"),
+        L.LSTM(60, return_sequences=True),
+        L.LSTM(60, return_sequences=True),
+        L.BatchNormalization(),
+        L.Dense(250, activation='relu'),
     ])
-    if mode == 'regression':
+    if output_dims == 1:
         model.add(L.Dense(output_dims, activation='tanh'))
+        model.add(L.Lambda(lambda x: x*500))
         model.compile(optimizer=K.optimizers.Adam(
-            learning_rate=0.001), loss='mse', metrics=['accuracy', 'mae'])
-    elif mode == 'classification':
+            learning_rate=0.01), loss='mse', metrics=['mse', 'mae'])
+    else:
         model.add(L.Dense(output_dims, activation='softmax'))
         model.compile(optimizer=K.optimizers.Adam(
             learning_rate=0.0001), loss=K.losses.CategoricalCrossentropy(), metrics=['accuracy', 'mae'])
-    else:
-        raise ValueError('Only (regression, classification) are allowed.')
 
     print(model.summary())
     return model

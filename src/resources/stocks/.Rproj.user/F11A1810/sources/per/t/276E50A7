@@ -1,0 +1,32 @@
+{
+    "id": "276E50A7",
+    "path": null,
+    "project_path": null,
+    "type": "r_dataframe",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1609165232088.0,
+    "source_on_save": false,
+    "relative_order": 4,
+    "properties": {
+        "expression": "HistoricalQuotes_NWARF",
+        "caption": "HistoricalQuotes_NWARF",
+        "totalObservations": "1782",
+        "displayedObservations": "1782",
+        "variables": "6",
+        "cacheKey": "D44E3A8C",
+        "object": "HistoricalQuotes_NWARF",
+        "environment": "",
+        "contentUrl": "grid_resource/gridviewer.html?env=&obj=HistoricalQuotes_NWARF&cache_key=D44E3A8C&max_cols=50",
+        "preview": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 12339,
+    "encoding": "",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1609165232088,
+    "read_only": false,
+    "read_only_alternatives": []
+}

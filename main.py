@@ -6,22 +6,37 @@ from src.data_analysis import DataAnalysis
 from src.time_series import TimeSeries
 from sklearn.metrics import multilabel_confusion_matrix
 from sklearn.model_selection import train_test_split
+from matplotlib import pyplot as plt
+import tensorflow as tf
+from scipy.signal import correlate
 
 if __name__ == "__main__":
-    ds = CSVReader(data_indices=[1, 3, 4],
-                   label_index=2, filenames=None, dir='src/stocks')
+    ds = CSVReader(data_indices=[4],
+                   label_index=2, info_indices=[0], filenames=None, dir='src/resources/stocks/fixed')
     files = ds.read_csv()
-    ts_file = files[0]
-    ts = TimeSeries(ts_file, 3, 1, NormalizationMethod.min_max)
-    X, Y = ts.generate(split=True)
-    x_train, x_test, y_train, y_test = train_test_split(
-        X, Y, test_size=0.15)
-    model = tf_model(input_dims=(3, 3), output_dims=1, mode='regression')
-    model.fit(x_train, y_train, batch_size=25, epochs=10, verbose=2)
 
-    y_pred = model.predict(x_test)
-    row_maxes = y_pred.max(axis=1).reshape(-1, 1)
-    b = np.zeros_like(y_pred)
-    b[np.arange(len(y_pred)), y_pred.argmax(1)] = 1
+    for file in files:
+        ts_file = file
+        ts = TimeSeries(ts_file, 1, 1, NormalizationMethod.min_max)
+        X, Y = ts.generate(split=True)
+        x_train, x_test, y_train, y_test = train_test_split(
+            X, Y, test_size=0.25)
+        model = tf_model(input_dims=(1, 1), output_dims=1)
+        model.fit(x_train, y_train, epochs=100, verbose=2)
 
-    print(multilabel_confusion_matrix(b, y))
+        x_dates = range(len(x_test))
+        predictions = [y[0] for y in model.predict(x_test)]
+        real = [y[0] for y in y_test]
+        correl = [y[0]
+                  for y in correlate(real, predictions, method='fft') / 500]
+
+        with open(f'prediction_{file.identifier()}', 'w') as f:
+            f.write("date_index,pred,real,correl\n")
+            for val in zip(x_dates, predictions, real, correl):
+                actual = (val[0], val[1][0], val[2][0], val[3])
+                f.write(','.join(str(e) for e in actual) + "\n")
+
+        plt.plot(x_dates, predictions, label="Predicted")
+        plt.plot(x_dates, real, label="Real")
+        plt.savefig(f"predicted_stocks_{file.identifier()}.png")
+        plt.reset

@@ -1,0 +1,32 @@
+{
+    "id": "EB0FA073",
+    "path": null,
+    "project_path": null,
+    "type": "r_dataframe",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1609165237916.0,
+    "source_on_save": false,
+    "relative_order": 5,
+    "properties": {
+        "expression": "HistoricalQuotes_AAL",
+        "caption": "HistoricalQuotes_AAL",
+        "totalObservations": "1775",
+        "displayedObservations": "1775",
+        "variables": "6",
+        "cacheKey": "FB6EF64D",
+        "object": "HistoricalQuotes_AAL",
+        "environment": "",
+        "contentUrl": "grid_resource/gridviewer.html?env=&obj=HistoricalQuotes_AAL&cache_key=FB6EF64D&max_cols=50",
+        "preview": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 2459014003615543610,
+    "encoding": "",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1609165237916,
+    "read_only": false,
+    "read_only_alternatives": []
+}

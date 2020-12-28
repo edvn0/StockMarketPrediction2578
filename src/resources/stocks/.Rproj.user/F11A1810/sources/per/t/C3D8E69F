@@ -1,0 +1,32 @@
+{
+    "id": "C3D8E69F",
+    "path": null,
+    "project_path": null,
+    "type": "r_dataframe",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1609165525296.0,
+    "source_on_save": false,
+    "relative_order": 7,
+    "properties": {
+        "expression": "aal_subset",
+        "caption": "aal_subset",
+        "totalObservations": "1775",
+        "displayedObservations": "1775",
+        "variables": "6",
+        "cacheKey": "AFEEE8C8",
+        "object": "aal_subset",
+        "environment": "",
+        "contentUrl": "grid_resource/gridviewer.html?env=&obj=aal_subset&cache_key=AFEEE8C8&max_cols=50",
+        "preview": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 140622774494504,
+    "encoding": "",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1609165525296,
+    "read_only": false,
+    "read_only_alternatives": []
+}

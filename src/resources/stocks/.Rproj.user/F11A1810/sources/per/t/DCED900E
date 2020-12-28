@@ -1,0 +1,32 @@
+{
+    "id": "DCED900E",
+    "path": null,
+    "project_path": null,
+    "type": "r_dataframe",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1609165194395.0,
+    "source_on_save": false,
+    "relative_order": 2,
+    "properties": {
+        "expression": "HistoricalQuotes_UAL",
+        "caption": "HistoricalQuotes_UAL",
+        "totalObservations": "3749",
+        "displayedObservations": "3749",
+        "variables": "6",
+        "cacheKey": "6D6B2A5B",
+        "object": "HistoricalQuotes_UAL",
+        "environment": "",
+        "contentUrl": "grid_resource/gridviewer.html?env=&obj=HistoricalQuotes_UAL&cache_key=6D6B2A5B&max_cols=50",
+        "preview": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 4843621640563472691,
+    "encoding": "",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1609165194395,
+    "read_only": false,
+    "read_only_alternatives": []
+}

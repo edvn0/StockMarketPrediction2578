@@ -8,31 +8,28 @@ from tensorflow.python.data.ops.dataset_ops import Dataset
 
 
 class DataEntry():
-    def __init__(self, data, label, row_index, meta=None):
+    def __init__(self, data, row_index, meta=None):
         self.data = data
-        self.label = label
         self.row_index = row_index
         self.meta = meta
 
     def __getitem__(self, item):
         if item == 'data':
             return self.data
-        elif item == 'label':
-            return self.label
         elif item == 'index':
             return self.row_index
         elif item == 'meta':
             return self.meta
         else:
             raise ValueError(
-                'Only data, label, index, and meta are allowed as indices into this object.')
+                'Only data, index, and meta are allowed as indices into this object.')
 
     @property
     def feature_size(self):
         return len(self.data)
 
     def __repr__(self) -> str:
-        return ", ".join([f'Data: {self.data}', f'Label: {self.label}'])
+        return f'Data: {self.data}'
 
 
 class DataSet():
@@ -120,7 +117,7 @@ class CSVFile(object):
 
 
 class CSVReader():
-    def __init__(self, data_indices: List[int], label_index: int, info_indices: list, filenames: List[CSVFile] = None,
+    def __init__(self, feature_index: int, info_indices: list, filenames: List[CSVFile] = None,
                  dir: str = None) -> None:
         """Creates a CSV reader for Stock Market historic files.
 
@@ -134,8 +131,7 @@ class CSVReader():
             ValueError: [description]
             ValueError: [description]
         """
-        self.data_indices = data_indices
-        self.label_index = label_index
+        self.feature_index = feature_index
         self.from_dir = False
         self.info_indices = info_indices
         if dir is not None and filenames is not None:
@@ -180,28 +176,11 @@ class CSVReader():
                     if row_size == 0:
                         continue
 
-                    if 'null' in row:
-                        continue
-
-                    # reasonable assumption for classification
-                    data = []
-                    for d in self.data_indices:
-                        data.append(row[d])
-                    # might be onehot, you have to solve this yourself.
-
-                    label = row[self.label_index]
-
+                    data = row[self.feature_index]
                     info = [row[d] for d in self.info_indices]
 
                     if f.to_numeric:  # force numeric if not already...
-                        data = list(map(float, data))
-                        label = float(label)
-
-                    if f.one_hot:
-                        label_to_int = int(label)
-                        one_hot = [0 for _ in range(f.classes)]
-                        one_hot[label_to_int] = 1
-                        label = one_hot
+                        data = float(data)
 
                     entry = DataEntry(data, label, i, info)
                     to_csv_file.append(entry)

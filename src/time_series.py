@@ -5,30 +5,25 @@ from src.data_input import DataEntry, DataSet
 
 
 class TimeSeries(object):
-    def __init__(self, ds: DataSet,  window_size: int, label_size: int, normalization_method: NormalizationMethod) -> None:
+    def __init__(self, normer: Normalizer, window_size: int, label_size: int) -> None:
         super().__init__()
         self.window_size = window_size
         self.label_size = label_size
-        self.total_size = self.window_size + self.label_size
-        self.ds = ds
 
-        self.normalizer = Normalizer(self.ds, normalization_method)
+        self.normalizer = normer
         self.normed_data = self.normalizer.normalize()
 
-        self.size = self.ds.size()[0]
+        self.size = self.normalizer.ds.size()[0]
 
     def generate(self, split=True):
         time_series: List[DataEntry] = []
-        step = self.window_size
         k = 0
-        data = self.normed_data
-        label = np.array(
-            list(map(lambda x: x['label'], self.ds))).reshape(-1, 1)
-        for i in range(0, self.size, step):
+        data, labels = self.normed_data
+        print(data.shape)
+        for i in range(self.window_size, self.size):
 
-            window_data = data[i:i+self.window_size]
-            window_label = label[i+self.window_size: i +
-                                 self.total_size]
+            window_data = data[i-self.window_size:i]
+            window_label = labels[i]
             k += 1
             entry = DataEntry(window_data, window_label,  k)
             time_series.append(entry)
@@ -39,6 +34,7 @@ class TimeSeries(object):
             time_series = time_series[:-1]
 
         ds = DataSet(time_series)
+        exit()
         if split:
             return ds.split_data()
         return ds
